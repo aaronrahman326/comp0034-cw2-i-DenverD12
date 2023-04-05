@@ -3,3 +3,13 @@ openpyxl
 flask
 flask-sqlalchemy
 flask-wtf
+
+flask-marshmallow
+marshmallow-sqlalchemy
+numpy
+scikit-learn
+jwt
+
+dash
+dash-bootstrap-components
+plotly
