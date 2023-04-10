@@ -17,3 +17,7 @@ pytest==7.2.1
 pytest-cov==4.0.0
 pytest-flask==1.2.0
 scikit-learn==1.2.0
+
+# Linters
+flake8
+pydocstyle
