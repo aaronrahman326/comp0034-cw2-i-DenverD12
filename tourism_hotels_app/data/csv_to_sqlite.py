@@ -5,42 +5,20 @@ from sqlalchemy import create_engine, types
 
 
 # Define the database file name and location
-db_file = Path(__file__).parent.joinpath("tourism_hotels.db")
+db_tourism_hotels_file = Path(__file__).parent.joinpath("tourism_hotels.db")
 
-# Create a connection to file as a SQLite database (this automatically creates the file if it doesn't exist)
-engine = create_engine("sqlite:///" + str(db_file), echo=False)
+# Create a connection to file as a SQLite database
+# (automatically creates file if it doesn't exist)
+engine = create_engine("sqlite:///" + str(db_tourism_hotels_file), echo=False)
 
-# Read the noc_regions data to a pandas dataframe
-# The following avoids an issue whereby entries with "NA" in the csv file are treated as null values rather than valid text 'NA' which is what we want
-na_values = [
-    "",
-    "#N/A",
-    "#N/A N/A",
-    "#NA",
-    "-1.#IND",
-    "-1.#QNAN",
-    "-NaN",
-    "-nan",
-    "1.#IND",
-    "1.#QNAN",
-    "<NA>",
-    "N/A",
-    "NULL",
-    "NaN",
-    "n/a",
-    "nan",
-    "null",
-]
-noc_file = Path(__file__).parent.joinpath("regions.csv")
-# Read the data and handles the NA issue
-noc_regions = pd.read_csv(noc_file, keep_default_na=False, na_values=na_values)
-
-# Read the paralympics event data to a pandas dataframe
-event_file = Path(__file__).parent.joinpath("Tourism_arrivals_prepared.csv")
-paralympics = pd.read_csv(event_file)
+# Read the tourism_arrivals_prepared data to a pandas dataframe
+tourism_arrivals_prepared_file = Path(__file__).parent.joinpath(
+    "Tourism_arrivals_prepared.csv"
+)
+tourism_arrivals_prepared = pd.read_csv(tourism_arrivals_prepared_file)
 
 # Write the data to tables in a sqlite database
-dtype_noc = {
+dtype_tourism = {
     "Country Name": types.TEXT(),
     "Region": types.TEXT(),
     "IncomeGroup": types.TEXT(),
@@ -75,18 +53,14 @@ dtype_noc = {
     "10-year Average in tourist arrivals": types.FLOAT(),
     "Max number of arrivals": types.FLOAT(),
     "Minimum number of arrivals": types.FLOAT(),
-    "Percent drop 2019 to 2020": types.FLOAT(),
+    "Percent drop 2019 to 2020": types.TEXT(),
 }
 
-dtype_event = {
-    "NOC": types.TEXT(),
-    "region": types.TEXT(),
-    "notes": types.TEXT(),
-}
-
-noc_regions.to_sql(
-    "region", engine, if_exists="append", index=False, dtype=dtype_noc
-)
-paralympics.to_sql(
-    "event", engine, if_exists="append", index=False, dtype=dtype_event
+# Create SQL database from prepared csv file
+tourism_arrivals_prepared.to_sql(
+    "tourism_arrivals",
+    engine,
+    if_exists="append",
+    index=False,
+    dtype=dtype_tourism,
 )
