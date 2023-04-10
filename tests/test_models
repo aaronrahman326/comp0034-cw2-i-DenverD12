@@ -1,0 +1,17 @@
+from tourism_hotels_app.models import TourismArrivals
+
+
+def test_create_new_region():
+    """
+    GIVEN json data for a country
+    WHEN a new country object is created
+    THEN check the fields are defined correctly
+    """
+    r = TourismArrivals(
+        NOC="NEW", region="New Region", notes="Some notes about the new region"
+    )
+    assert r.Country_Name == "New Country"
+    assert r.Region ==  "New Region"
+    assert r.IncomeGroup == "High Income"
+    assert r.Country_Code == ""
+    assert r.Indicator_Name == "International tourism, number of arrivals"
