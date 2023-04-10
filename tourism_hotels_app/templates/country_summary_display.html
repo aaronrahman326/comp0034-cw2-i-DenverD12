@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+{% set title = country["Country_Name"] %}
+{% block content %}
+
+
+<h1>{{ country['Country_Name']}} ({{ country['Region'] }})</h1>
+<ul>
+    <li id="income-group">Income Group/Type: {{ country['IncomeGroup']}}</li>
+    <li id="10-year-average">Average tourist arrivals in the last 10 years: {{ country['Average_10year_in_tourist_arrivals'] }} </li>
+    <li id="max-number-arrivals">Maximum all-time number of arrivals: {{ country['Max_number_of_arrivals'] }}</li>
+    <li id="min-number-arrivals">Lowest all-time number of arrivals: {{ country['Minimum_number_of_arrivals']}} </li>
+    <li id="%-drop-2019-to-2020">Percentage drop in arrivals from 2019 to 2020: {{ country['Percent_drop_2019_to_2020'] }} </li>
+</ul>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+{% set title = 'International Tourism and Hospitality Home' %}
+{% block content %}
+
+<p>There is international tourist arrivals data for the following countries</p>
+<ul>
+    <ul>
+        {% for country in country_list %}
+        <li><a id="{{ country['Country_Name'] }}" href="{{ url_for('main.display_country', Country_Name=country['Country_Name'])}}">{{
+                country['Country_Name'] }}
+                ({{ country['Region'] }})</a></li>
+        {% endfor %}
+    </ul>
+</ul>
+
+{% endblock %}
