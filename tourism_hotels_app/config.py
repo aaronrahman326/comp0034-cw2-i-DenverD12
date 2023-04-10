@@ -14,6 +14,8 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
+    # Disable autosort for json keys to keep desired order
+    JSON_SORT_KEYS = False
 
 
 class ProdConfig(Config):
@@ -25,12 +27,13 @@ class ProdConfig(Config):
     pass
 
 
-class DevConfig(Config):
+class DevelopmentConfig(Config):
     """Development config"""
 
     FLASK_ENV = "development"
     DEBUG = True
     TESTING = True
+    JSON_SORT_KEYS = False
 
 
 class TestConfig(Config):
@@ -41,3 +44,4 @@ class TestConfig(Config):
     # CSRF set to false to prevent fail during testing
     WTF_CSRF_ENABLED = False
     SERVER_NAME = "127.0.0.1:5000"
+    JSON_SORT_KEYS = False
