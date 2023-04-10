@@ -12,4 +12,15 @@
    - Testing Config Mode: Run the code: `flask --app "tourism_hotels_app:create_app('tourism_hotels_app.config.TestConfig')" run`
 
 # **URL to my GitHub repository**
-**https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12**
+### **https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12**  
+
+<br/>
+
+# **URL to my continuous integration using Github Actions**
+### Github Actions link: **https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/actions**  
+### Workflow .yml file link: **https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/actions/runs/4660814109/workflow**
+- The continuous integration workflow runs tests using `pytest`, with coverage using `pytest-cov`.  
+- It also uses the linters: `flake8` and `pydocstyle`
+
+# **Linters**
+### The linters used was `flake8` for code and comments quality and `pydocstyle` for docstrings quality.
