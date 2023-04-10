@@ -21,6 +21,7 @@ def test_client(app):
         with app.app_context():
             yield testing_client
 
+
 # Define a fixture containing expected keys for all countries
 @pytest.fixture(scope="function")
 def expected_keys():
@@ -62,7 +63,21 @@ def expected_keys():
         "Percent_drop_2019_to_2020",
     }
     yield expected_keys_dict
-    
+
+
+# Define important fixture to track correct number of rows,
+# even if a new one is posted
+@pytest.fixture(scope='function')
+def expected_lengths_row_count(test_client):
+    # Query the database to get the number of countries for each year
+    years = ["1995", "2000", "2010", "2015", "2020"]
+    expected_lengths = {}
+    for year in years:
+        response = test_client.get(f'/api/filterby/year/{year}')
+        expected_lengths[year] = len(response.json)
+
+    return expected_lengths
+
 # # Define a fixture for an example country object from model
 # @pytest.fixture(scope="module")
 # def country():
