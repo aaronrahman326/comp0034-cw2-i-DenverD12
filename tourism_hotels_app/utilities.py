@@ -8,6 +8,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flask import jsonify, request
+from werkzeug.exceptions import BadRequest
 
 # Marshmallow Schemas
 countries_schema = TourismArrivalsSchema(many=True)
@@ -58,8 +59,8 @@ def get_year(chosen_year):
 
 
 def create_country_format():
-
-    data, expected_types = get_expected_types()
+    #! TODO: put same errors from pacth onto here, especially the non-nulls
+    data, expected_types, non_nullable_columns = get_expected_types()
     # Check that all the required keys are present in the JSON data
     required_keys = expected_types.keys()
     missing_keys = required_keys - data.keys()
@@ -70,7 +71,15 @@ def create_country_format():
     for key, expected_type in expected_types.items():
         value = data.get(key)
         if value is not None and not isinstance(value, expected_type):
-            raise ValueError(f"Value for {key} should be of type: {expected_type.__name__}")
+            raise ValueError(
+                f"The value entered for {key} should be of type: {expected_type.__name__}"
+            )
+
+    # For the first 5 columns only, the entered data cannot be null
+    for key in list(data.keys())[:5]:
+        if key in non_nullable_columns:
+            if not data[key]:
+                raise ValueError(f"The value entered for {key} cannot be empty or null")
 
     # If all the validation passes, create the new country format object
     new_country_format = TourismArrivals(**data)
@@ -78,16 +87,35 @@ def create_country_format():
 
 
 def get_updated_country(existing_country, country_name):
-
-    data, expected_types = get_expected_types()
+    data, expected_types, non_nullable_columns = get_expected_types()
     # Check that the values of the keys match their expected types
     for key, expected_type in expected_types.items():
         value = data.get(key)
+        # If entered value is not null but not the correct type, raise error
         if value is not None and not isinstance(value, expected_type):
-            raise ValueError(f"Value for {key} should be of type: {expected_type.__name__}")
+            raise ValueError(
+                f"The value entered for {key} should be of type: {expected_type.__name__}"
+            )
+
+    # For the first 5 columns only, the entered data cannot be null
+    for key in list(data.keys())[:5]:
+        if key in non_nullable_columns:
+            if not data[key]:
+                raise ValueError(f"The value entered for {key} cannot be empty or null")
 
     # Get the updated details from the json sent in the HTTP patch request
     country_json = request.get_json()
+
+    # Check if any new value entered for key (entire value) already exists
+    for key, value in country_json.items():
+        # Strips whitespace when matching to ensure only if
+        # entire value exists, to raise the error
+        existing_record = getattr(existing_country, key)
+        if value == existing_record:
+            raise ValueError(
+                f"Value entered of '{value}' for '{key}' already exists in the database"
+            )
+
     # Update existing records with JSON changes and commit to database
     country_schema.load(country_json, instance=existing_country, partial=True)
     db.session.commit()
@@ -99,7 +127,9 @@ def get_updated_country(existing_country, country_name):
     return result
 
 
-# Sub-Helper Functions used by Helper Functions on this page 
+# -----
+# Sub-Helper Functions used by Helper Functions on this page
+# -----
 def get_expected_types():
     # Define a dictionary with keys as column names and values as their expected data types
     expected_types = {
@@ -140,6 +170,14 @@ def get_expected_types():
         "Percent_drop_2019_to_2020": str,
     }
 
+    non_nullable_columns = {
+        "Country_Name": str,
+        "Region": str,
+        "IncomeGroup": str,
+        "Country_Code": str,
+        "Indicator_Name": str,
+    }
+
     # Get the JSON data from the request
     data = request.get_json()
-    return data, expected_types
+    return data, expected_types, non_nullable_columns
