@@ -3,9 +3,8 @@ from tourism_hotels_app.models import TourismArrivals
 from tourism_hotels_app.schemas import TourismArrivalsSchema
 from tourism_hotels_app import db
 import json
-# -------
-# Schemas
-# -----
+
+# Define Schemas
 countries_schema = TourismArrivalsSchema(many=True)
 country_schema = TourismArrivalsSchema()
 
