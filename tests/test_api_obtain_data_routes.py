@@ -7,8 +7,8 @@ import json
 # -------
 # Schemas
 # -----
-regions_schema = TourismArrivalsSchema(many=True)
-region_schema = TourismArrivalsSchema()
+countries_schema = TourismArrivalsSchema(many=True)
+country_schema = TourismArrivalsSchema()
 
 
 def test_get_all_countries(test_client, expected_keys):
@@ -71,7 +71,7 @@ def test_when_get_specific_country_then_correct_json_returned(
     THEN:
     """
     response = test_client.get(
-        f"/api/countries/filterby/country/{expected_result_cname}"
+        f"/api/countries/country/{expected_result_cname}"
     )
 
     assert response.status_code == 200
@@ -89,33 +89,11 @@ def test_when_get_specific_country_then_correct_json_returned(
         assert country_json[key] == value
 
 
-@pytest.mark.parametrize("year", ["1995", "2000", "2010", "2015", "2020"])
-def test_by_year_parametrized(test_client, year):
-    # Test case 1: Check if the response is successful and the returned JSON has the correct length
-    response = test_client.get(f'/api/filterby/year/{year}')
-    assert response.status_code == 200
-    assert len(response.json) == 195
-
-    # Test case 2: Check if the returned JSON contains the correct keys
-    response = test_client.get(f'/api/filterby/year/{year}')
-    assert response.status_code == 200
-    assert 'Country_Name' in response.json[0]
-    assert f'year_{year}' in response.json[0]
-
-
-@pytest.mark.parametrize("year", ["1900", "1000", "0", "3000", "text"])
-def test_by_year_invalid_year(test_client, year):
-
-    # Test case 3: Check if the endpoint returns the correct error message for an invalid year
-    response = test_client.get(f'/api/filterby/year/{year}')
-    assert response.status_code == 404
-    assert response.json['status'] == 404
-    assert response.json['error'] == 'Not found'
-    assert response.json['message'] == 'Invalid resource URI: Invalid year'
-
 
 @pytest.mark.parametrize("year", ["1995", "2000", "2010", "2015", "2020", "1900", "1000", "0", "3000", "text"])
-def test_filter_by_year(test_client, year, expected_lengths_row_count):
+def test_filter_by_year_valid_and_invalid_years_combined(
+    test_client, year, expected_lengths_row_count
+):
     if year.isdigit():
         if int(year) < 1995 or int(year) > 2020:
             # Test case 3: Check if the endpoint returns the correct error message for an invalid year
@@ -141,3 +119,31 @@ def test_filter_by_year(test_client, year, expected_lengths_row_count):
         assert response.json['status'] == 404
         assert response.json['error'] == 'Not found'
         assert response.json['message'] == 'Invalid resource URI: Invalid year'
+
+
+# The code below is the separated functions of the valid and invalid years which
+# were combined above. This was kept for ease of reading
+# @pytest.mark.parametrize("year", ["1995", "2000", "2010", "2015", "2020"])
+# def test_by_year_parametrized(test_client, year, expected_lengths_row_count):
+#     # Test case 1: Check if the response is successful and the returned JSON has the correct length
+#     response = test_client.get(f'/api/filterby/year/{year}')
+#     assert response.status_code == 200
+#     expected_length = expected_lengths_row_count[year] if year in expected_lengths_row_count else 0
+#     assert len(response.json) == expected_length
+
+#     # Test case 2: Check if the returned JSON contains the correct keys
+#     response = test_client.get(f'/api/filterby/year/{year}')
+#     assert response.status_code == 200
+#     assert 'Country_Name' in response.json[0]
+#     assert f'year_{year}' in response.json[0]
+
+
+# @pytest.mark.parametrize("year", ["1900", "1000", "0", "3000", "text"])
+# def test_by_year_invalid_year(test_client, year):
+
+#     # Test case 3: Check if the endpoint returns the correct error message for an invalid year
+#     response = test_client.get(f'/api/filterby/year/{year}')
+#     assert response.status_code == 404
+#     assert response.json['status'] == 404
+#     assert response.json['error'] == 'Not found'
+#     assert response.json['message'] == 'Invalid resource URI: Invalid year'
