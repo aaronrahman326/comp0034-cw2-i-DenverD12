@@ -40,7 +40,7 @@ def get_all_countries():
     return response
 
 
-@obtain_data_api_bp.get("/countries/filterby/country/<country_name>")
+@obtain_data_api_bp.get("/countries/country/<country_name>")
 def by_country(country_name):
     """
     Returns a JSON response with details for a particular country.
@@ -85,3 +85,4 @@ def by_year(chosen_year):
         )
         response = make_response(message, 404)
         return response
+
