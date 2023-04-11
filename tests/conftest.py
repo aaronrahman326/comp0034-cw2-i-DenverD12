@@ -78,23 +78,69 @@ def expected_lengths_row_count(test_client):
 
     return expected_lengths
 
-# # Define a fixture for an example country object from model
-# @pytest.fixture(scope="module")
-# def country():
-#     """Create a new tourism arrivals country object for tests."""
-#     new_country = TourismArrivals(
-#         NOC="NEW", region="New Region", notes="Some notes about the new region"
-#     )
-#     return new_country
+
+# Define a base fixture for an example valid country object 1 from model
+@pytest.fixture(scope="module")
+def country_example_base_valid_model():
+    """Create a new tourism arrivals country object for tests."""
+    country_example_model_1 = TourismArrivals(
+        Country_Name="New Country", Region="New Region",
+        IncomeGroup="High Income", Country_Code="TEST",
+        Indicator_Name="International tourism, number of arrivals",
+        year_1995=1, year_1996=1, year_1997=1, year_1998=1, year_1999=1,
+        year_2000=1, year_2001=1, year_2002=1, year_2003=1, year_2004=1,
+        year_2005=1, year_2006=1, year_2007=1, year_2008=1, year_2009=1,
+        year_2010=1, year_2011=1, year_2012=1, year_2013=1, year_2014=1,
+        year_2015=1, year_2016=1, year_2017=1, year_2018=1, year_2019=1,
+        year_2020=1, Average_10year_in_tourist_arrivals="10.1",
+        Max_number_of_arrivals=1, Minimum_number_of_arrivals=1,
+        Percent_drop_2019_to_2020="10%",
+    )
+    return country_example_model_1
 
 
-# # Define a fixture for an example country json
-# @pytest.fixture(scope="module")
-# def country_json():
-#     """Create a new tourism arrivals country JSON for tests."""
-#     new_country_json = {
-#         "NOC": "NEW",
-#         "region": "New Region",
-#         "notes": "Some notes about the new region",
-#     }
-#     return new_country_json
+# Define a base fixture for an example valid country json 1
+@pytest.fixture(scope="module")
+def country_example_base_valid_json():
+    """Create a new tourism arrivals country JSON for tests."""
+    new_country_test_json_1 = {
+        "Country_Name": "New Country", "Region": "New Region",
+        "IncomeGroup": "High Income", "Country_Code": "TEST",
+        "Indicator_Name": "International tourism, number of arrivals",
+        "year_1995": 1, "year_1996": 1, "year_1997": 1, "year_1998": 1,
+        "year_1999": 1, "year_2000": 1, "year_2001": 1, "year_2002": 1,
+        "year_2003": 1, "year_2004": 1, "year_2005": 1, "year_2006": 1,
+        "year_2007": 1, "year_2008": 1, "year_2009": 1, "year_2010": 1,
+        "year_2011": 1, "year_2012": 1, "year_2013": 1, "year_2014": 1,
+        "year_2015": 1, "year_2016": 1, "year_2017": 1, "year_2018": 1,
+        "year_2019": 1, "year_2020": 1,
+        "Average_10year_in_tourist_arrivals": "10.1",
+        "Max_number_of_arrivals": 1, "Minimum_number_of_arrivals": 1,
+        "Percent_drop_2019_to_2020": "10%",
+    }
+    return new_country_test_json_1
+
+
+@pytest.fixture(scope="module")
+def country_example_valid_json_with_valid_nulls(country_example_base_valid_json):
+    country_example_base_valid_json["year_2015"] = None
+    country_example_base_valid_json["Percent_drop_2019_to_2020"] = None
+    return country_example_base_valid_json
+
+
+@pytest.fixture(scope="module")
+def country_example_valid_model_with_valid_nulls(country_example_base_valid_model):
+    """Create a new tourism arrivals country object for tests."""
+    # Remove '_sa_instance_state' key from object's __dict__ to prevent
+    # TypeError when creating a new object from updated dictionary.
+    country_example_base_model_dict = {
+        k: v for k, v in country_example_base_valid_model.__dict__.items()
+        if k != '_sa_instance_state'
+    }
+    country_example_base_model_dict.update({
+        'year_2015': None,
+        "Percent_drop_2019_to_2020": None
+    })
+    return TourismArrivals(**country_example_base_model_dict)
+
+
