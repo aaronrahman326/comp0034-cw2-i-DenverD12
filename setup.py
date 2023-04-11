@@ -2,7 +2,6 @@ from setuptools import setup, find_packages
 
 setup(
     name="comp0034-cw1-i-DenverD12",
-    version="1.0.0",
     author="Denver D'Silva",
     url="https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12",
     python_requires=">=3.10",
