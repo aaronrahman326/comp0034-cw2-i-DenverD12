@@ -89,7 +89,7 @@ class TestConfig(Config):
     This class defines configuration settings for the Flask app when
     it is being tested.
     It enables testing mode, sets the SQLAlchemy echo mode to True, and
-    disables the CSRF protection for easier testing. 
+    disables the CSRF protection for easier testing.
     It also sets the server name and disables JSON key sorting
     for easier testing.
 
@@ -101,6 +101,7 @@ class TestConfig(Config):
         SERVER_NAME (str): The server name to be used for the application.
         JSON_SORT_KEYS (bool): Whether or not to sort JSON keys.
     """
+
     TESTING = True
     SQLALCHEMY_ECHO = True
     # CSRF set to false to prevent fail during testing
