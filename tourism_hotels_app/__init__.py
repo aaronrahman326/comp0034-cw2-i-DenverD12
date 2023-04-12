@@ -1,3 +1,4 @@
+"""Main file that handles main app functions and initializing."""
 from pathlib import Path
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -14,9 +15,21 @@ ma = Marshmallow()
 
 
 def create_app(config_object):
-    """Create and configure the Flask app"""
+    """
+    Create and configure the Flask app, connecting to the config file.
+
+    Also initializes and registers all blueprints with routes and
+    includes routes and models within app context to access request
+    and app specific data.
+
+    Args:
+        config_object: Config classes from config.py
+
+    Returns:
+        app: The main flask app instance
+    """
     app = Flask(__name__)
-    # See config parameters in config.py
+    # See config parameters in config.py, using classes
     app.config.from_object(config_object)
 
     # Uses a helper function to initialise extensions
@@ -35,20 +48,25 @@ def create_app(config_object):
     # Include the routes within app context
     with app.app_context():
         from tourism_hotels_app import (
-            routes_html_display, 
-            routes_api_obtain_data, 
-            routes_api_update_data
+            routes_html_display,
+            routes_api_obtain_data,
+            routes_api_update_data,
         )
-
-        ## This is required as you must instantiate the models before marshamallow schemas
+        # Instantiate TourismArrivals models marshamallow schemas
         from tourism_hotels_app.models import TourismArrivals
 
     return app
 
 
 def initialize_extensions(app):
-    """Binds extensions to the Flask application instance (app)"""
-    # Flask-SQLAlchemy - ## must be initialized before marshmallow
+    """
+    Bind extensions to the Flask application instance (app).
+
+    Args:
+        app: Flask app application instance
+    Returns:
+        None
+    """
+    # Initialize Flask-SQLAlchemy Flask-Marshmallow
     db.init_app(app)
-    # Flask-Marshmallow
     ma.init_app(app)
