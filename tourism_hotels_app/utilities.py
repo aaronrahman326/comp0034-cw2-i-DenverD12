@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 from werkzeug.exceptions import BadRequest
 
 # Marshmallow Schemas
@@ -42,8 +42,8 @@ def get_country(country_name):
 
 
 def get_year(chosen_year):
-    # Get the data from the database using SQLAlchemy
 
+    # Get the data from the database using SQLAlchemy
     query = TourismArrivals.query.with_entities(
         TourismArrivals.Country_Name,
         getattr(TourismArrivals, f"year_{chosen_year}"),
@@ -59,7 +59,14 @@ def get_year(chosen_year):
 
 
 def create_country_format():
+
     data, expected_types, non_nullable_columns = get_expected_types()
+
+    # Check that column/key names actually exist first
+    for key in list(data.keys()):
+        if key not in expected_types:
+                raise AttributeError
+
     # Check that all required keys, i.e. Column names are present
     # in the JSON data
     required_keys = expected_types.keys()
@@ -75,6 +82,7 @@ def create_country_format():
                 f"The value entered for {key} should be of type: {expected_type.__name__}"
             )
 
+
     # For the first 5 columns only, the entered data cannot be null
     for key in list(data.keys())[:5]:
         if key in non_nullable_columns:
@@ -88,6 +96,11 @@ def create_country_format():
 
 def get_updated_country(existing_country, country_name):
     data, expected_types, non_nullable_columns = get_expected_types()
+    # Check that column/key name actually exists first
+    for key in list(data.keys()):
+        if key not in expected_types:
+                raise AttributeError
+
     # Check that the values of the keys match their expected types
     for key, expected_type in expected_types.items():
         value = data.get(key)
@@ -96,6 +109,7 @@ def get_updated_country(existing_country, country_name):
             raise ValueError(
                 f"The value entered for {key} should be of type: {expected_type.__name__}"
             )
+
 
     # For the first 5 columns only, the entered data cannot be null
     for key in list(data.keys())[:5]:
@@ -124,6 +138,7 @@ def get_updated_country(existing_country, country_name):
         db.select(TourismArrivals).filter_by(Country_Name=country_name)
     ).scalar_one_or_none()
     result = country_schema.jsonify(updated_country)
+
     return result
 
 

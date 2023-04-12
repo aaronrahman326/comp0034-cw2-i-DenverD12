@@ -47,9 +47,12 @@ def add_country():
         response.headers["Content-Type"] = "application/json"
     except IntegrityError:
         db.session.rollback()
-        message = (
-            jsonify({"error": "Country name already exists in the database!"}),
-            409,
+        message = jsonify(
+            {
+                "status": 409,
+                "error": "Database Integrity Error",
+                "message": "Country name already exists in the database!",
+            }
         )
         response = make_response(message, 409)
         response.headers["Content-Type"] = "application/json"
@@ -57,17 +60,37 @@ def add_country():
     # helper function get_updated_country()
     except ValueError as error_message:
         db.session.rollback()
-        custom_error_message_json = jsonify({"error": str(error_message)})
+        custom_error_message_json = jsonify(
+            {
+                "status": 400,
+                "error": str(error_message)
+            }
+        )
         response = make_response(custom_error_message_json, 400)
         response.headers["Content-Type"] = "application/json"
     # Catch the BadRequest error if any word or text entered is not a string
+    except AttributeError:
+        error_message_json = jsonify(
+            {
+                "status": 404,
+                "error": "Invalid key entry: "
+                "That column name does not exist.",
+            }
+        )
+        response = make_response(error_message_json, 400)
+        response.headers["Content-Type"] = "application/json"
     except BadRequest as badrequest_message:
         badrequest_message = (
-            "Bad request - The value entered for the key was in the "
-            "wrong format or was a string/text entered without being "
-            "wrapped in quotes."
+            "The value entered for the key was in the wrong format or was a "
+            "string/text entered without being wrapped in quotes."
         )
-        error_message_json = jsonify({"error": badrequest_message})
+        error_message_json = jsonify(
+            {
+                "status": 400,
+                "error": "Bad Request",
+                "message": badrequest_message,
+            }
+        )
         response = make_response(error_message_json, 400)
         response.headers["Content-Type"] = "application/json"
     return response
@@ -96,7 +119,7 @@ def edit_existing_country(country_name):
                     "status": 404,
                     "error": "Not found",
                     "message": "Invalid resource URI - "
-                    "That country does not exist",
+                               "That country does not exist",
                 }
             )
             response = make_response(message, 404)
@@ -106,16 +129,37 @@ def edit_existing_country(country_name):
     # Returns the 3 types of value error custom message defined in \
     # helper function get_updated_country()
     except ValueError as value_error_message:
-        error_message_json = jsonify({"error": str(value_error_message)})
+        error_message_json = jsonify(
+            {
+                    "status": 400,
+                    "error": str(value_error_message)
+            }
+        )
         response = make_response(error_message_json, 400)
         response.headers["Content-Type"] = "application/json"
-    # Catches the ValidationError, custom message and modifies message
+    # Catch attribute error for non-existing key(column) entry 
+    except AttributeError:
+        error_message_json = jsonify(
+            {
+                "status": 404,
+                "error": "Invalid key entry: "
+                "That column name does not exist.",
+            }
+        )
+        response = make_response(error_message_json, 400)
+        response.headers["Content-Type"] = "application/json"
+    # Catch the ValidationError, custom message and modifies message
     except ValidationError as validation_error_message:
         error_messages = []
         for field, errors in validation_error_message.messages.items():
             for error in errors:
                 error_messages.append(f"The value entered: {field} is: {error}")
-        error_message_json = jsonify({"error": ", ".join(error_messages)})
+        error_message_json = jsonify(
+            {
+                "status": 400,
+                "error": ", ".join(error_messages),
+             }
+        )
         response = make_response(error_message_json, 400)
         response.headers["Content-Type"] = "application/json"
     # Catch the BadRequest error if any word or text entered is not a string
