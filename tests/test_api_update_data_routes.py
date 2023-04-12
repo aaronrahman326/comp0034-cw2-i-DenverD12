@@ -51,7 +51,7 @@ def test_post_country_added_when_add_country(
     data = response.json
 
     for key, value in country_example_json.items():
-        assert data[f"{key}"] == value
+        assert data[key] == value
 
     assert response.status_code == 201
     assert num_countries_in_db_after == num_countries_in_db + 1
@@ -81,7 +81,7 @@ def test_post_country_not_added_when_invalid_entry(
         # if country does exist, then delete it
         db.session.execute(db.delete(TourismArrivals).where(TourismArrivals.Country_Name == country_example_model.Country_Name))
         db.session.commit()
-        
+
     expected_types, non_nullable_columns = expected_column_value_types
 
     # Add a new country row via post route method
@@ -89,15 +89,21 @@ def test_post_country_not_added_when_invalid_entry(
     assert response.status_code == 400
 
     # For the first 5 columns only, the entered data cannot be null
+    # Applies to test case of IncomeGroup Column entry
     for key in list(country_example_invalid_json_with_invalid_nulls.keys())[:5]:
         if key in non_nullable_columns:
             if not country_example_invalid_json_with_invalid_nulls[key]:
-                assert ValueError(f"The value entered for IncomeGroup cannot be empty or null")
+                expected_error_message = {
+                        "status": 400,
+                        "error": str("The value entered for IncomeGroup "
+                                     "cannot be empty or null")
+                }
+                assert ValueError(expected_error_message)
 
 
 @pytest.mark.parametrize("country_name, example_valid_field_entries", [
     ("India", {"year_1995": 1000, "year_1996": 1500}),
-    ("TestCountry", {"Region": "UpdatedRegion", "IncomeGroup": "UpdatedIncomeGroup"})
+    ("TestCountry_2", {"Region": "UpdatedRegion", "IncomeGroup": "UpdatedIncomeGroup"})
 ])
 def test_edit_existing_country_with_valid_input(
     test_client, country_name, example_valid_field_entries
@@ -108,7 +114,7 @@ def test_edit_existing_country_with_valid_input(
     to the database."""
     # If the test is for custom TestCountry,
     # Create the necessary data in the database
-    if country_name == "TestCountry":
+    if country_name == "TestCountry_2":
         existing_country = TourismArrivals(Country_Name=country_name, Region="TestRegion", IncomeGroup="TestIncomeGroup", Country_Code="TestCountryCode", Indicator_Name="TestIndicatorName", year_1995=100, year_1996=200, year_1997=300)
         db.session.add(existing_country)
         db.session.commit()
@@ -138,7 +144,7 @@ def test_edit_existing_country_with_valid_input(
         assert updated_country.year_1996 == 1500
 
     # Assertions specific to TestCountry test case
-    if country_name == "TestCountry":
+    if country_name == "TestCountry_2":
         # Check if the Region and IncomeGroup fields are updated in the database
         assert updated_country.Region == data["Region"]
         assert updated_country.IncomeGroup == data["IncomeGroup"]
@@ -181,17 +187,22 @@ def test_edit_existing_country_with_invalid_json_entry(test_client):
     # Test data
     country_name = 'India'
     example_invalid_entries = {
-        "year_1995": "invalid string entry which should be integer"
+        "year_1995": "Example invalid string which should be integer"
     }
 
     # Make a request to the API
     response = test_client.patch(
         f'/api/countries/{country_name}', json=example_invalid_entries
     )
-
+    error_message = response.get_json()
+    expected_error_message = {
+                                "status": 400,
+                                 "error": "The value entered for year_1995 should be of type: int"
+    }
     # Assertions
     assert response.status_code == 400
-    assert ValueError('The value entered for year_1995 should be of type: int')
+    assert ValueError
+    assert error_message == expected_error_message
 
 
 def test_edit_existing_country_with_empty_payload(test_client):
