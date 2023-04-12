@@ -1,18 +1,55 @@
-# This file is to define the model classes that will map from the database to Python classes
+"""
+This file is to define model classes.
+
+These will map from the database to Python classes.
+"""
 from tourism_hotels_app import db
 
 
 class TourismArrivals(db.Model):
-    """Tourist Arrivals per year in each country"""
+    """
+    Contains the SQLAlchemy model class.
+
+    This defines a mapping between the `tourism_arrivals` table
+    in the database and the corresponding Python class.
+
+    Args:
+        db.Model: Connects to SQLAlchemy database model function.
+
+    Attributes:
+        Country_Name (str): The name of the country (primary key).
+        Region (str): The region where the country is located.
+        IncomeGroup (str): The income group of the country.
+        Country_Code (str): The code that identifies the country.
+        Indicator_Name (str): The name of the tourism indicator.
+        year_1995-2020 (int): The number of tourist arrivals in the
+            respective year.
+        Average_10year_in_tourist_arrivals (str): The 10-year average of
+            tourist arrivals for each country.
+        Max_number_of_arrivals (int): The all time maximum number of
+            tourist arrivals.
+        Minimum_number_of_arrivals (int): The all time minimum number of
+            tourist arrivals for each country.
+        Percent_drop_2019_to_2020 (str): The percentage of drop in tourist
+            arrivals between 2019 and 2020.
+
+    Methods:
+        __repr__(): Returns the attributes of the country as a string.
+        to_dict(): Returns a dictionary representation of the object.
+
+    """
 
     __tablename__ = "tourism_arrivals"
-    ## set nullable=false to ensure any attempt to enter new data in that column without specifying a value returns an error
-    Country_Name = db.Column("Country Name", db.Text, unique=True, nullable=False, primary_key=True)
+    # Columns for each attribute, with descriptions and constraints
+    # Set nulls to false for first 5 columns as every country must have
+    Country_Name = db.Column(
+        "Country Name", db.Text, unique=True, nullable=False, primary_key=True
+    )
     Region = db.Column(db.Text, nullable=False)
     IncomeGroup = db.Column(db.Text, nullable=False)
     Country_Code = db.Column("Country Code", db.Text, nullable=False)
     Indicator_Name = db.Column("Indicator Name", db.Text, nullable=False)
-    # Years may not have records so can be nullable
+    # Years may not have existing records so can be allowed nulls.
     year_1995 = db.Column("1995", db.Integer, nullable=True)
     year_1996 = db.Column("1996", db.Integer, nullable=True)
     year_1997 = db.Column("1997", db.Integer, nullable=True)
@@ -54,8 +91,12 @@ class TourismArrivals(db.Model):
 
     def __repr__(self):
         """
-        Returns the attributes of the country as a string
-        :returns str
+        Return the attributes of the country as a string.
+
+        Args:
+            self.
+        Returns:
+            Attributes/Column Names of the country as a string.
         """
         clsname = self.__class__.__name__
         return f"<\
@@ -76,6 +117,16 @@ class TourismArrivals(db.Model):
             >"
 
     def to_dict(self):
+        """
+        Sub-function creates column names dictionary.
+
+        Used for easier serializing to JSON and testing.
+
+        Args:
+            self.
+        Returns:
+            Column names dictionary.
+        """
         return {
             "Country_Name": self.Country_Name,
             "Region": self.Region,
@@ -108,7 +159,8 @@ class TourismArrivals(db.Model):
             "year_2018": self.year_2018,
             "year_2019": self.year_2019,
             "year_2020": self.year_2020,
-            "Average_10year_in_tourist_arrivals": self.Average_10year_in_tourist_arrivals,
+            "Average_10year_in_tourist_arrivals":
+                self.Average_10year_in_tourist_arrivals,
             "Max_number_of_arrivals": self.Max_number_of_arrivals,
             "Minimum_number_of_arrivals": self.Minimum_number_of_arrivals,
             "Percent_drop_2019_to_2020": self.Percent_drop_2019_to_2020,
