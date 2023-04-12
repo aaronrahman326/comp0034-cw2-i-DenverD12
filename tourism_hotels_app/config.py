@@ -28,7 +28,7 @@ class ProdConfig(Config):
 
 
 class DevelopmentConfig(Config):
-    """Development config"""
+    """Development config."""
 
     FLASK_ENV = "development"
     DEBUG = True
@@ -37,7 +37,7 @@ class DevelopmentConfig(Config):
 
 
 class TestConfig(Config):
-    """Testing config"""
+    """Testing config."""
 
     TESTING = True
     SQLALCHEMY_ECHO = True

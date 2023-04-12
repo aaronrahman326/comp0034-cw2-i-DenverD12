@@ -59,9 +59,9 @@ def get_year(chosen_year):
 
 
 def create_country_format():
-    #! TODO: put same errors from pacth onto here, especially the non-nulls
     data, expected_types, non_nullable_columns = get_expected_types()
-    # Check that all the required keys are present in the JSON data
+    # Check that all required keys, i.e. Column names are present
+    # in the JSON data
     required_keys = expected_types.keys()
     missing_keys = required_keys - data.keys()
     if missing_keys:

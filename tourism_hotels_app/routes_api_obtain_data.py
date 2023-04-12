@@ -36,7 +36,7 @@ def get_all_countries():
     # Use helper function from utilities.py to get JSON of all countries data
     all_countries = get_countries()
     response = make_response(all_countries, 200)
-
+    response.headers["Content-Type"] = "application/json"
     return response
 
 
@@ -59,6 +59,7 @@ def by_country(country_name):
             }
         )
         response = make_response(message, 404)
+        response.headers["Content-Type"] = "application/json"
     return response
 
 
@@ -84,5 +85,5 @@ def by_year(chosen_year):
             }
         )
         response = make_response(message, 404)
+        response.headers["Content-Type"] = "application/json"
         return response
-

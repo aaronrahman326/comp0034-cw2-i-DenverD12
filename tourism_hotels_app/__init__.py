@@ -26,7 +26,7 @@ def create_app(config_object):
     from tourism_hotels_app.routes_html_display import html_display_bp
     from tourism_hotels_app.routes_api_obtain_data import obtain_data_api_bp
     from tourism_hotels_app.routes_api_update_data import update_data_api_bp
-    
+
     # Register all blueprints
     app.register_blueprint(html_display_bp)
     app.register_blueprint(obtain_data_api_bp)
@@ -34,7 +34,11 @@ def create_app(config_object):
 
     # Include the routes within app context
     with app.app_context():
-        from tourism_hotels_app import routes_html_display, routes_api_obtain_data, routes_api_update_data
+        from tourism_hotels_app import (
+            routes_html_display, 
+            routes_api_obtain_data, 
+            routes_api_update_data
+        )
 
         ## This is required as you must instantiate the models before marshamallow schemas
         from tourism_hotels_app.models import TourismArrivals

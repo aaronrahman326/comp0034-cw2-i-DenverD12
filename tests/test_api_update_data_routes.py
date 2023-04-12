@@ -102,7 +102,12 @@ def test_post_country_not_added_when_invalid_entry(
 def test_edit_existing_country_with_valid_input(
     test_client, country_name, example_valid_field_entries
 ):
-    # If the test is for TestCountry, create the necessary data in the database
+    """This function tests for two parametrized tests.
+    One if for a Country Name that already exists in the database,
+    And another for a custom (mock) country name that is first added
+    to the database."""
+    # If the test is for custom TestCountry,
+    # Create the necessary data in the database
     if country_name == "TestCountry":
         existing_country = TourismArrivals(Country_Name=country_name, Region="TestRegion", IncomeGroup="TestIncomeGroup", Country_Code="TestCountryCode", Indicator_Name="TestIndicatorName", year_1995=100, year_1996=200, year_1997=300)
         db.session.add(existing_country)
@@ -114,7 +119,7 @@ def test_edit_existing_country_with_valid_input(
     # Make the API request
     response = test_client.patch(f"/api/countries/{country_name}", json=data)
 
-    # Assertion common to all valid cases
+    # Assertion success common to all valid cases
     assert response.status_code == 200
 
     # Get the updated country data from the database
@@ -139,3 +144,66 @@ def test_edit_existing_country_with_valid_input(
         assert updated_country.IncomeGroup == data["IncomeGroup"]
 
 
+def test_edit_existing_country_with_invalid_country_name(test_client):
+    # Test data
+    invalid_country_name_uri = 'Invalid Country'
+    example_valid_entries = {
+        "year_1995": 1000,
+        "year_1996": 1500
+    }
+
+    # Make a request to the API
+    response = test_client.patch(
+        f'/api/countries/{invalid_country_name_uri}',
+        json=example_valid_entries
+    )
+    data = response.get_json()
+
+    # Assertions
+    assert response.status_code == 404
+    assert data['status'] == 404
+    assert 'Not found' in data['error']
+
+
+def test_edit_nonexistent_country(test_client):
+    country_name = "NonexistentCountry"
+    data = {"Region": "TestRegion", "IncomeGroup": "TestIncomeGroup"}
+
+    response = test_client.patch(f"/api/countries/{country_name}", json=data)
+    assert response.status_code == 404
+
+    response_json = response.get_json()
+    assert response_json["error"] == "Not found"
+    assert response_json["message"] == "Invalid resource URI - That country does not exist"
+
+
+def test_edit_existing_country_with_invalid_json_entry(test_client):
+    # Test data
+    country_name = 'India'
+    example_invalid_entries = {
+        "year_1995": "invalid string entry which should be integer"
+    }
+
+    # Make a request to the API
+    response = test_client.patch(
+        f'/api/countries/{country_name}', json=example_invalid_entries
+    )
+
+    # Assertions
+    assert response.status_code == 400
+    assert ValueError('The value entered for year_1995 should be of type: int')
+
+
+def test_edit_existing_country_with_empty_payload(test_client):
+    # Test data
+    country_name = 'India'
+    payload = {
+        "Region": ""
+    }
+
+    # Make a request to the API
+    response = test_client.patch(f'/api/countries/{country_name}', json=payload)
+
+    # Assertions
+    assert response.status_code == 400
+    assert ValueError('The value entered for Region cannot be empty or null')
