@@ -1,8 +1,12 @@
+""""""
+# ! Remove later: command for individual: pytest tests/test_api_obtain_data_routes.py/test_get_all_countries
 import pytest
+import json
 from tourism_hotels_app.models import TourismArrivals
 from tourism_hotels_app.schemas import TourismArrivalsSchema
 from tourism_hotels_app import db
-import json
+from flask import jsonify
+from urllib.error import HTTPError
 
 # Define Schemas
 countries_schema = TourismArrivalsSchema(many=True)
@@ -12,6 +16,7 @@ country_schema = TourismArrivalsSchema()
 def test_get_all_countries(test_client, expected_keys):
     # Make a GET request to the `/countries` endpoint
     response = test_client.get("/api/countries")
+
     assert response.status_code == 200
 
     # Deserialize the response content to a Python list
@@ -54,10 +59,17 @@ def test_get_all_countries(test_client, expected_keys):
             17914000,
             "IND",
         ),
+        (
+            "Invalid_Country",
+            None,
+            None,
+            None,
+        ),
     ),
 )
 def test_when_get_specific_country_then_correct_json_returned(
     test_client,
+    expected_column_value_types,
     expected_result_cname,
     expected_result_year2001,
     expected_result_max,
@@ -68,28 +80,45 @@ def test_when_get_specific_country_then_correct_json_returned(
     WHEN:
     THEN:
     """
+    expected_types, non_nullable_columns = expected_column_value_types
+
+    # Query the Country_Name column using db.session.query()
+    result = db.session.query(TourismArrivals.Country_Name).all()
+    valid_country_names = [row[0] for row in result]
+
+    # Print the list of country names
+    print(f"This is a list of names: {valid_country_names}")
+
     response = test_client.get(
-        f"/api/countries/country/{expected_result_cname}"
-    )
-
-    assert response.status_code == 200
-
-    country_json = response.json
+                    f"/api/countries/country/{expected_result_cname}"
+                )
+    country_response_json = response.json
 
     variables_dict = {
-        "Country_Name": expected_result_cname,
-        "year_2001": expected_result_year2001,
-        "Max_number_of_arrivals": expected_result_max,
-        "Country_Code": expected_result_ccode,
-    }
+            "Country_Name": expected_result_cname,
+            "year_2001": expected_result_year2001,
+            "Max_number_of_arrivals": expected_result_max,
+            "Country_Code": expected_result_ccode,
+        }
 
-    for key, value in variables_dict.items():
-        assert country_json[key] == value
-
+    if expected_result_cname not in valid_country_names:
+        expected_error_message = {
+            "status": 404,
+            "error": "Not found",
+            "message": "Invalid resource URI: Invalid Country Name",
+        }
+        assert KeyError
+        assert response.status_code == 404
+        assert "Not found" in response.json["error"]
+        assert country_response_json == expected_error_message
+    else:
+        for column_name, expected_result in variables_dict.items():
+            assert country_response_json[column_name] == expected_result
+            assert response.status_code == 200
 
 
 @pytest.mark.parametrize("year", ["1995", "2000", "2010", "2015", "2020", "1900", "1000", "0", "3000", "text"])
-def test_filter_by_year_valid_and_invalid_years_combined(
+def test_filter_by_year_for_valid_and_invalid_years_combined(
     test_client, year, expected_lengths_row_count
 ):
     if year.isdigit():
@@ -100,6 +129,7 @@ def test_filter_by_year_valid_and_invalid_years_combined(
             assert response.json['status'] == 404
             assert response.json['error'] == 'Not found'
             assert response.json['message'] == 'Invalid resource URI: Invalid year'
+            assert AttributeError
         else:
             # Test case 1: Check if the response is successful and the returned JSON has the correct length
             response = test_client.get(f'/api/filterby/year/{year}')
@@ -113,14 +143,58 @@ def test_filter_by_year_valid_and_invalid_years_combined(
                 assert f'year_{year}' in response.json[0]
     else:
         response = test_client.get(f'/api/filterby/year/{year}')
+        assert HTTPError
         assert response.status_code == 404
         assert response.json['status'] == 404
         assert response.json['error'] == 'Not found'
         assert response.json['message'] == 'Invalid resource URI: Invalid year'
 
+def test_top_10_countries_2020(test_client):
+    # Add a new row to test if top 10 is updated
+    new_country = TourismArrivals(
+        Country_Name='TestCountry',
+        Region='TestRegion',
+        IncomeGroup='TestIncomeGroup',
+        Country_Code='TST',
+        Indicator_Name='TestIndicator',
+        Average_10year_in_tourist_arrivals="9999999999999"
+    )
+    db.session.add(new_country)
+    db.session.commit()
+
+    response = test_client.get("/api/top-10-countries")
+    assert response.status_code == 200
+
+    # Check that the response is valid JSON
+    data = json.loads(response.data)
+    assert isinstance(data, dict)
+
+    # Check that the response contains the correct keys
+    assert "Top 10 countries for tourist arrivals" in data.keys()
+    assert isinstance(data["Top 10 countries for tourist arrivals"], list)
+    assert len(data["Top 10 countries for tourist arrivals"]) == 10
+
+    # Check that the response contains the expected top 10 countries,
+    # and their values dynamically, even with a new country added
+    top_10_countries = {
+        "TestCountry": "9999999999999",
+        'France': "196572800",
+        'United States': "158278026.6",
+        'China': "130580500",
+        'Spain': "104183800",
+        'Mexico': "83798500",
+        'Italy': "78958560.16",
+        'Poland': "76742111.11",
+        'Croatia': "50864700",
+        'Hong Kong SAR, China': "50473900",
+    }
+    for country in data["Top 10 countries for tourist arrivals"]:
+        assert country["Country_Name"] in top_10_countries.keys()
+
 
 # The code below is the separated functions of the valid and invalid years which
-# were combined above. This was kept for ease of reading
+# were combined above. This was kept for ease of reading but are the same as
+# test_filter_by_year_valid_and_invalid_years_combined().
 # @pytest.mark.parametrize("year", ["1995", "2000", "2010", "2015", "2020"])
 # def test_by_year_parametrized(test_client, year, expected_lengths_row_count):
 #     # Test case 1: Check if the response is successful and the returned JSON has the correct length

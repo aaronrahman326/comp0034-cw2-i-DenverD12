@@ -226,8 +226,7 @@ def country_example_invalid_json_with_invalid_nulls(
 
 
 
-
-
+# Helper fixture used by many other fixtures
 @pytest.fixture(scope="module")
 def expected_column_value_types():
     # Define a dictionary with keys as column names and values as their expected data types
