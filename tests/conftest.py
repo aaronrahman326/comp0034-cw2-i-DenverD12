@@ -15,7 +15,7 @@ def app():
 # Define a test client fixture for flask routes test
 @pytest.fixture(scope="function")
 def test_client(app):
-    """Create a Flask test client."""
+    """Create a Flask test client for flask routes test."""
     with app.test_client() as testing_client:
         # Establish an application context
         with app.app_context():
@@ -25,6 +25,9 @@ def test_client(app):
 # Define a fixture containing expected keys for all countries
 @pytest.fixture(scope="function")
 def expected_keys():
+    """
+    Define a fixture containing expected keys for all
+    """
     expected_keys_dict = {
         "Country_Name",
         "Region",
@@ -65,8 +68,8 @@ def expected_keys():
     yield expected_keys_dict
 
 
-# Define important fixture to track correct number of rows,
-# even if a new one is posted
+# Define important fixture to dynamically track correct
+# number of rows, even if a new one is posted
 @pytest.fixture(scope="function")
 def expected_lengths_row_count(test_client):
     # Query the database to get the number of countries for each year
@@ -77,6 +80,25 @@ def expected_lengths_row_count(test_client):
         expected_lengths[year] = len(response.json)
 
     return expected_lengths
+
+
+@pytest.fixture(scope="function")
+def top_10_countries_expected(test_client):
+    # An expected list of Top 10, after a new mock TestCountry added,
+    # Which changed top 10
+    top_10_countries_expected_dict = {
+        "TestCountry": "9999999999999",
+        "France": "196572800",
+        "United States": "158278026.6",
+        "China": "130580500",
+        "Spain": "104183800",
+        "Mexico": "83798500",
+        "Italy": "78958560.16",
+        "Poland": "76742111.11",
+        "Croatia": "50864700",
+        "Hong Kong SAR, China": "50473900",
+    }
+    return top_10_countries_expected_dict
 
 
 # Define a base fixture for an example valid country object 1 from model
