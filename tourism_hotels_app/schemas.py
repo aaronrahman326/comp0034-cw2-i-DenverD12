@@ -1,17 +1,50 @@
+"""File containing SQLAlchemy Schema's created from the database model."""
 from tourism_hotels_app.models import TourismArrivals
 from tourism_hotels_app import db, ma
 
 
 # -------------------------
 # Flask-Marshmallow Schemas
-# See https://marshmallow-sqlalchemy.readthedocs.io/en/latest/#generate-marshmallow-schemas
 # -------------------------
-
-
 class TourismArrivalsSchema(ma.SQLAlchemySchema):
-    """Marshmallow schema defining the attributes for creating a new country entry for tourist arrivals."""
+    """
+    Marshmallow schema defining attributes for creating a new country.
+
+    This class defines a Marshmallow schema that is used to serialize
+    and deserialize data from the TourismArrivals model to JSON, and
+    vice versa.
+
+    Attributes:
+    -----------
+    Meta: Subclass of SQLAlchemy's MetaData that holds the name of the
+        model class, deserialization flag and session object to
+        use when working, with database.
+    Country_Name : Auto-generated field, corresponds to the Country_Name
+        column in TourismArrivals table.
+    Region : Auto-generated field that corresponds to Region column in
+        TourismArrivals table.
+    IncomeGroup : Auto-generated field that corresponds to IncomeGroup
+        column in TourismArrivals table.
+    Country_Code : Auto-generated field that corresponds to Country_Code
+        column in TourismArrivals table.
+    Indicator_Name : Auto-generated field that corresponds to
+        Indicator_Name column in TourismArrivals table.
+    year_1995 - year_2020 : Auto-generated fields that correspond to
+        yearly columns in TourismArrivals table.
+    Average_10year_in_tourist_arrivals : Auto-generated field that
+        corresponds to Average_10year_in_tourist_arrivals column in
+        TourismArrivals table.
+    Max_number_of_arrivals : Auto-generated field that corresponds to
+        Max_number_of_arrivals column in TourismArrivals table.
+    Minimum_number_of_arrivals : Auto-generated field that corresponds
+        to Minimum_number_of_arrivals column in TourismArrivals table.
+    Percent_drop_2019_to_2020 : Auto-generated field that corresponds
+        to Percent_drop_2019_to_2020 column in TourismArrivals table.
+    """
 
     class Meta:
+        """Subclass of SQLAlchemy's MetaData."""
+
         # State the name of the model class
         model = TourismArrivals
         # Deserialize to model instances
@@ -19,10 +52,8 @@ class TourismArrivalsSchema(ma.SQLAlchemySchema):
         # Tell Marshmallow session to use to work with database
         sqla_session = db.session
         include_relationships = True
-        # Order all json entries by order of entry
+        # Order all json entries by order of entry to prevent random
         ordered = True
-        #! Remove below and above later if not using multiple tables
-        #! include_fk = True
 
     # Specify the fields to include in the schema
     Country_Name = ma.auto_field()
