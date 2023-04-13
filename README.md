@@ -12,6 +12,10 @@
    - Base Configuration (Config) Mode: Run the code: `flask --app "tourism_hotels_app:create_app('tourism_hotels_app.config.Config')" run`
    - Development Config Mode: Run the code: `flask --app "tourism_hotels_app:create_app('tourism_hotels_app.config.DevelopmentConfig')" run `
    - Testing Config Mode: Run the code: `flask --app "tourism_hotels_app:create_app('tourism_hotels_app.config.TestConfig')" run` 
+# **ADDITIONAL INSTRUCTIONS WHEN MARKING**   
+- ### **Please note, I did not have time to implement a delete file, therefore I provided a backup of the database in the folder called `MOVE_backup_of_database_when_marking`.**  
+- ### **So when you use POSTMAN to test the `PATCH` and `POST` routes, after each one/iteration is tested, `delete` the main version of the database `tourism_hotels.db` in folder `tourism_hotels_app/data` first. Then make sure to `COPY` the same named database from the `MOVE_backup_of_database_when_marking` folder to the main data folder each time.**
+- ### **Do the same as above if you are doing pytest testing for each function, if individually. Essentially, any test that updates or inputs data to mock a country added or if anything is added to database, after that test, delete the database in data and copy and paste the backup. Thank you.**
 
 <br/>
 
