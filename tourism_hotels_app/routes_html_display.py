@@ -1,35 +1,42 @@
-from flask import render_template, Blueprint, abort, current_app as app
+"""File for basic html front-end routes, NOTE: NOT required as individual."""
+from flask import render_template, Blueprint, abort
 from tourism_hotels_app.utilities import get_countries, get_country
 
 
-# Define the Blueprint
+# Define the Blueprint for basic html front-end
 html_display_bp = Blueprint("main", __name__)
-
-
-# @main_bp.errorhandler(500)
-# def internal_server_error(e):
-#     """Custom error message for Internal Server Error status code 500"""
-#     return render_template("500.html"), 500
-
-
-# @main_bp.errorhandler(404)
-# def page_not_found(e):
-#     """Custom error message for Not Found error with status code 404"""
-#     return render_template("404.html"), 404
 
 
 @html_display_bp.route("/")
 def index():
-    """Returns the home page."""
+    """
+    HTTP GET request route that returns home page html template.
+
+    Args:
+        None
+    Returns:
+        Returns the home page with a list of available countries.
+    """
     response = get_countries()
     return render_template("index.html", country_list=response)
 
 
 @html_display_bp.route("/display_country/<Country_Name>")
 def display_country(Country_Name):
-    """Returns the country detail page."""
+    """
+    HTTP GET request route that returns jinja html template of each country.
+
+    Args:
+        Country_Name: Name of a specific country entered as URI
+        or from choosing a country from the home page.
+    Returns:
+        Returns details page with a basic summary of each country.
+    """
     current_country = get_country(Country_Name)
     if current_country:
-        return render_template("country_summary_display.html", country=current_country)
+        return render_template(
+            "country_summary_display.html",
+            country=current_country
+        )
     else:
         abort(404)
