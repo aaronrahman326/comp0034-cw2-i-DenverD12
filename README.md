@@ -1,18 +1,17 @@
 # COMP0034 Coursework 2 README
 
+# **URL to my GitHub repository**
+### **https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12** 
 <br/>
 
-# **Set-up Instructions**
+# **SET-UP INSTRUCTIONS**
 1. First create a new terminal, then create, setup and activate a virtual environment.
 2. In the terminal run the code: `pip install -e to install` all the packages and dependencies from setup.py. 
 3. In the terminal, run the code: `pip install -r requirements.txt` to install dependencies/required libraries.
 4. Now to run the flask app, it can be run in 3 configuration modes:  
    - Base Configuration (Config) Mode: Run the code: `flask --app "tourism_hotels_app:create_app('tourism_hotels_app.config.Config')" run`
    - Development Config Mode: Run the code: `flask --app "tourism_hotels_app:create_app('tourism_hotels_app.config.DevelopmentConfig')" run `
-   - Testing Config Mode: Run the code: `flask --app "tourism_hotels_app:create_app('tourism_hotels_app.config.TestConfig')" run`
-
-# **URL to my GitHub repository**
-### **https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12**  
+   - Testing Config Mode: Run the code: `flask --app "tourism_hotels_app:create_app('tourism_hotels_app.config.TestConfig')" run` 
 
 <br/>
 
@@ -34,9 +33,9 @@
 - Link to evidence image: https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Testing_Success_evidence_terminal_output_2023-04-12_time_215710.png  
 
 If link doesn't work locate the screenshot in file path:
-- ucl-comp0035/comp0034-cw2-i-DenverD12/Testing_Success_evidence_terminal_output_2023-04-12_time_215710.png   
+- `ucl-comp0035/comp0034-cw2-i-DenverD12/Testing_Success_evidence_terminal_output_2023-04-12_time_215710.png  ` 
 ### For filepaths and all test names showing success in the Testing section:  
 - Link to evidence 2 image: https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Testing_success_evidence_with_filepaths_2023-04-12_time-220722.png   
 
 If link doesn't work locate the screenshot in file path:
-- ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Testing_success_evidence_with_filepaths_2023-04-12_time-220722.png     
+- `ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Testing_success_evidence_with_filepaths_2023-04-12_time-220722.png   `  
