@@ -48,4 +48,8 @@ If link doesn't work locate the screenshot in file path:
 - Link to evidence image 2: https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Testing_success_evidence_with_filepaths_2023-04-12_time-220722.png   
 
 If link doesn't work locate the screenshot in file path:
-- `ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Testing_success_evidence_with_filepaths_2023-04-12_time-220722.png   `  
+- `ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Testing_success_evidence_with_filepaths_2023-04-12_time-220722.png   `   
+
+# **COVERAGE**
+### - Coverage can be seen in my Continuous Integration workflow, where the highest coverage was obtained for the POST country route of `96%`, where almost every possible outcome was tested. 
+### - However, not all aspects for other tests could be covered, as an individual doing this project and due to limited time, hence there is low coverage for some.
