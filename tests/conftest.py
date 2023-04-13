@@ -2,7 +2,7 @@
 import pytest
 from tourism_hotels_app import create_app, config
 from tourism_hotels_app.models import TourismArrivals
-from flask import jsonify, request
+
 
 # Define an app instance fixture for flask routes test
 @pytest.fixture(scope="session")
@@ -22,57 +22,12 @@ def test_client(app):
             yield testing_client
 
 
-# Define a fixture containing expected keys for all countries
-@pytest.fixture(scope="function")
-def expected_keys():
-    """
-    Define a fixture containing expected keys for all
-    """
-    expected_keys_dict = {
-        "Country_Name",
-        "Region",
-        "IncomeGroup",
-        "Country_Code",
-        "Indicator_Name",
-        "year_1995",
-        "year_1996",
-        "year_1997",
-        "year_1998",
-        "year_1999",
-        "year_2000",
-        "year_2001",
-        "year_2002",
-        "year_2003",
-        "year_2004",
-        "year_2005",
-        "year_2006",
-        "year_2007",
-        "year_2008",
-        "year_2009",
-        "year_2010",
-        "year_2011",
-        "year_2012",
-        "year_2013",
-        "year_2014",
-        "year_2015",
-        "year_2016",
-        "year_2017",
-        "year_2018",
-        "year_2019",
-        "year_2020",
-        "Average_10year_in_tourist_arrivals",
-        "Max_number_of_arrivals",
-        "Minimum_number_of_arrivals",
-        "Percent_drop_2019_to_2020",
-    }
-    yield expected_keys_dict
-
-
 # Define important fixture to dynamically track correct
 # number of rows, even if a new one is posted
 @pytest.fixture(scope="function")
 def expected_lengths_row_count(test_client):
-    # Query the database to get the number of countries for each year
+    """Return a dictionary of expected response lengths per year."""
+    # Query database to get number of countries for each year
     years = ["1995", "2000", "2010", "2015", "2020"]
     expected_lengths = {}
     for year in years:
@@ -84,8 +39,9 @@ def expected_lengths_row_count(test_client):
 
 @pytest.fixture(scope="function")
 def top_10_countries_expected(test_client):
-    # An expected list of Top 10, after a new mock TestCountry added,
-    # Which changed top 10
+    """Return dictionary with top 10 countries and average values."""
+    # An expected dictionary of Top 10 countries and values,
+    # after a new mock TestCountry added, Which changed top 10
     top_10_countries_expected_dict = {
         "TestCountry": "9999999999999",
         "France": "196572800",
@@ -99,6 +55,22 @@ def top_10_countries_expected(test_client):
         "Hong Kong SAR, China": "50473900",
     }
     return top_10_countries_expected_dict
+
+
+@pytest.fixture(scope="function")
+def new_top_country_for_top_10(test_client):
+    """Return an updated SQLAlchemy database model for one country."""
+    # Define a new country row for tourism database
+    # Include very high average to change top 10
+    new_country_row = TourismArrivals(
+        Country_Name="TestCountry",
+        Region="TestRegion",
+        IncomeGroup="TestIncomeGroup",
+        Country_Code="TST",
+        Indicator_Name="TestIndicator",
+        Average_10year_in_tourist_arrivals="9999999999999",
+    )
+    return new_country_row
 
 
 # Define a base fixture for an example valid country object 1 from model
@@ -189,11 +161,12 @@ def country_example_base_valid_json():
     return new_country_test_json_1
 
 
+# Define a valid base country object 2 from model with valid nulls.
 @pytest.fixture(scope="module")
 def country_example_valid_model_with_valid_nulls(
     country_example_base_valid_model
 ):
-    """Create a new tourism arrivals country object for tests."""
+    """Create a new tourism arrivals country object with valid nulls."""
     # Remove '_sa_instance_state' key from object's __dict__ to prevent
     # TypeError when creating a new object from updated dictionary.
     country_example_base_model_dict = {
@@ -201,26 +174,30 @@ def country_example_valid_model_with_valid_nulls(
         for key, value in country_example_base_valid_model.__dict__.items()
         if key != "_sa_instance_state"
     }
+    # Update and return created model object
     country_example_base_model_dict.update(
         {"year_2015": None, "Percent_drop_2019_to_2020": None}
     )
     return TourismArrivals(**country_example_base_model_dict)
 
 
+# Define valid base country JSON 2 from model with valid nulls
 @pytest.fixture(scope="module")
 def country_example_valid_json_with_valid_nulls(
     country_example_base_valid_json
 ):
+    """Create a new tourism arrivals country JSON with valid nulls."""
     country_example_base_valid_json["year_2015"] = None
     country_example_base_valid_json["Percent_drop_2019_to_2020"] = None
     return country_example_base_valid_json
 
 
+# Define invalid base country object from model with invalid nulls
 @pytest.fixture(scope="module")
 def country_example_invalid_model_with_invalid_nulls(
     country_example_base_valid_model
 ):
-    """Create a new tourism arrivals country object for tests."""
+    """Create a new tourism country object with invalid nulls."""
     # Remove '_sa_instance_state' key from object's __dict__ to prevent
     # TypeError when creating a new object from updated dictionary.
     country_example_base_model_dict = {
@@ -236,10 +213,12 @@ def country_example_invalid_model_with_invalid_nulls(
     return TourismArrivals(**country_example_base_model_dict)
 
 
+# Define invalid base country JSON with invalid nulls
 @pytest.fixture(scope="module")
 def country_example_invalid_json_with_invalid_nulls(
     country_example_base_valid_json
 ):
+    """Create a new tourism country JSON with invalid nulls."""
     # Set an invalid null value for IncomeGroup - does not allow nulls
     country_example_base_valid_json["IncomeGroup"] = None
     # Set a valid null just to show test will fail even if one invalid
@@ -247,11 +226,12 @@ def country_example_invalid_json_with_invalid_nulls(
     return country_example_base_valid_json
 
 
-
 # Helper fixture used by many other fixtures
 @pytest.fixture(scope="module")
 def expected_column_value_types():
-    # Define a dictionary with keys as column names and values as their expected data types
+    """Return column names, expected tyoes and non-nullable columns."""
+    # Define a dictionary with keys as column names and values
+    # Values contain column expected data types
     expected_types = {
         "Country_Name": str,
         "Region": str,
