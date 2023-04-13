@@ -1,8 +1,4 @@
-"""
-This file is to define model classes.
-
-These will map from the database to Python classes.
-"""
+"""This file defines model classes, maps from database to Python classes."""
 from tourism_hotels_app import db
 
 
