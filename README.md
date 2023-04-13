@@ -20,16 +20,22 @@
 <br/>
 
 # **GITHUB ACTIONS URL to my continuous integration**
-### Github Actions link: **https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/actions**  
+### GitHub Actions link: **https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/actions**  
 ### Workflow .yml file link: **https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/actions/runs/4660814109/workflow**
 - The continuous integration workflow runs tests using `pytest`, with coverage using `pytest-cov`.  
 - It also uses the linters: `flake8` and `pydocstyle`
 
-# **Linters**
+# **LINTING**
 - ### The linters used was `flake8` for code and comments quality and `pydocstyle` for docstrings quality.  
 
-- ### Linting evidence can be seen overtime from the various workflows in github actions continuous integration.  
+- ### Linting - most evidence can be seen overtime from the various workflows in GitHub actions continuous integration, but also from screenshots below.
+- ### I fixed all linting errors according to flake8 and pydocstyle and got every file to 0 errors, EXCEPT the __init__.py file, where the imports had to be initialized for the routes, models and schemas within the app context, as required by flask. 
+- ### The before and after evidence can be seen below, with the numbers next to file name indicating the errors. The "PROBLEMS" tab in the terminal at the bottom show also, that after linting steps taken only the 4 unsolvable linting errors remain mentioned above.
+## **Linting evidence before:**
+- Link to evidence image: https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Before_linting_errors_fixed_Screenshot_1_2023-04-13%20023025.png
 
+## **Linting evidence after fixing all errors except unfixable:**
+- https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/After_fixing_ALL_LINTING_evidence_Screenshot_2023-04-13_time_150357.png 
 # **TESTING FURTHER EVIDENCE**
 ### Below is two links to screenshots showing the successful tests and their filepaths:  
 
@@ -39,7 +45,7 @@
 If link doesn't work locate the screenshot in file path:
 - `ucl-comp0035/comp0034-cw2-i-DenverD12/Testing_Success_evidence_terminal_output_2023-04-12_time_215710.png  ` 
 ### For filepaths and all test names showing success in the Testing section:  
-- Link to evidence 2 image: https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Testing_success_evidence_with_filepaths_2023-04-12_time-220722.png   
+- Link to evidence image 2: https://github.com/ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Testing_success_evidence_with_filepaths_2023-04-12_time-220722.png   
 
 If link doesn't work locate the screenshot in file path:
 - `ucl-comp0035/comp0034-cw2-i-DenverD12/blob/main/Testing_success_evidence_with_filepaths_2023-04-12_time-220722.png   `  
