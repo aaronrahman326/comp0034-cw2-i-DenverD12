@@ -1,3 +1,4 @@
+"""This file contains setup details for the project and app."""
 from setuptools import setup, find_packages
 
 setup(
